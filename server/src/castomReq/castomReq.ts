@@ -1,16 +1,9 @@
 import { NextFunction, Request, Response } from "express";
+import { ScheduleFiltersDTO } from "../modules/Schedule/dto/ScheduleFilters";
 
 export interface CustomRequest extends Request {
   dto: any;
-  user: {
-    email: string;
-    id: string;
-    name: string;
-  };
-  filters?: {
-    startDate?: Date;
-    endDate?: Date;
-  }
+  filters?: ScheduleFiltersDTO
 }
 export type CustomRequestHandler = (
   req: CustomRequest,

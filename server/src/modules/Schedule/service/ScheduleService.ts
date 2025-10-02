@@ -23,11 +23,11 @@ export class ScheduleService implements IScheduleService {
     async deleteShedule(id: number): Promise<void> {
         await this.repository.deleteOne(id);
     }
-    async getSchedule(filters: ScheduleFiltersDTO, id: number): Promise<Schedule[] | Schedule | null> {
+    async getSchedule(id?: number,filters?: ScheduleFiltersDTO,): Promise<Schedule[] | Schedule | null> {
         if(id) {
             return await this.repository.getOne(id);
         } 
-        return await this.repository.getMany(filters);
+        return await this.repository.getMany(filters as ScheduleFiltersDTO);
     
     }
     async getFilters(): Promise<GetFilters> {
