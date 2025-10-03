@@ -9,6 +9,8 @@ import { IScheduleRepository } from "../modules/Schedule/repository/ScheduleRepo
 import { ScheduleRepository } from "../modules/Schedule/repository/ScheduleRepository";
 import { IScheduleService } from "../modules/Schedule/service/ScheduleServiceInterface";
 import { ScheduleService } from "../modules/Schedule/service/ScheduleService";
+import { IScheduleController } from "../modules/Schedule/controller/ScheduleControllerInterface";
+import { ScheduleController } from "../modules/Schedule/controller/ScheduleController";
 
 
 const appBindContainer = new ContainerModule((bind) => {
@@ -17,6 +19,7 @@ const appBindContainer = new ContainerModule((bind) => {
     bind.bind<IErrorFilter>(TYPES.ErrorFilter).to(ErrorFilter).inSingletonScope(),
     bind.bind<IScheduleRepository>(TYPES.SheduleRepository).to(ScheduleRepository).inSingletonScope(),
     bind.bind<IScheduleService>(TYPES.ScheduleService).to(ScheduleService).inSingletonScope()
+    bind.bind<IScheduleController>(TYPES.ScheduleController).to(ScheduleController).inSingletonScope()
     bind.bind<App>(TYPES.App).to(App).inSingletonScope()
    
 })

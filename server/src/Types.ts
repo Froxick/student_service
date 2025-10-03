@@ -4,5 +4,6 @@ export const TYPES = {
     LoggerService: Symbol.for('LoggerService'),
     ErrorFilter: Symbol.for('ErrorFilter'),
     SheduleRepository: Symbol.for('SheduleRepository'),
-    ScheduleService: Symbol.for('ScheduleService')
+    ScheduleService: Symbol.for('ScheduleService'),
+    ScheduleController: Symbol.for('ScheduleController')
 }

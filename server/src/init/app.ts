@@ -7,6 +7,7 @@ import qs from 'qs';
 import cors from 'cors';
 import { IErrorFilter } from "../error/ErrorFiler.interface";
 import { TYPES } from "../Types";
+import { ScheduleController } from "../modules/Schedule/controller/ScheduleController";
 @injectable()
 export class App {
     app: Express
@@ -15,14 +16,15 @@ export class App {
 
     constructor(
         @inject(TYPES.LoggerService) private logger: ILogger,
-        @inject(TYPES.ErrorFilter) private errorFilter: IErrorFilter
+        @inject(TYPES.ErrorFilter) private errorFilter: IErrorFilter,
+        @inject(TYPES.ScheduleController) private ScheduleController : ScheduleController
     ) {
         this.port = 3000
         this.app = express()
         
     }
      public useRoutes () {
-        
+        this.app.use('/schedule',this.ScheduleController.router)
      }
      public useErrorFilter () {
         this.app.use(this.errorFilter.cath.bind(this.errorFilter))
@@ -45,6 +47,9 @@ export class App {
         this.app.use(json())
     }
     public init() {
+       this.useMiddleware()
+       this.useRoutes()
+       this.useErrorFilter()
        this.server = this.app.listen(this.port)
        this.logger.log('Сервер запущен на порту  - ', this.port)
     }
