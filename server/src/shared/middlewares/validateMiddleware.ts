@@ -4,29 +4,57 @@ import { NextFunction, Request, RequestHandler, Response } from "express"
 import { HttpError } from "../../error/HTTP.error";
 import { CustomRequest, CustomRequestHandler } from "../../castomReq/castomReq";
 import { ClassConstructor, plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
+import { validate, ValidationError } from "class-validator";
 
 export type reqSorceT  = 'BODY' | 'QUERY'
 
-export function ValidateReqMiddleware<T extends ClassConstructor<object>>(dtoClass: T, reqSorce : reqSorceT, filters?: boolean) : CustomRequestHandler {
+export function ValidateReqMiddleware<T extends ClassConstructor<object>>(dtoClass: T, reqSorce : reqSorceT, options?: {
+    filters?: boolean,
+    isArray? : boolean
+}) : CustomRequestHandler {
     
     return async (req: CustomRequest, res: Response, next: NextFunction) => {
         try{
+            const {filters = false, isArray = false} = options || {}
             if(filters && reqSorce === 'QUERY') {
                 const hasQeryParams = Object.keys(req.query).length > 0
                 if(!hasQeryParams){
                     return next()
                 }
             }
-            const dtoTransform = reqSorce === 'BODY' ? plainToInstance(dtoClass,req.body) : plainToInstance(dtoClass, req.query) 
-            
-            const error_list = await validate(dtoTransform)
-            if(error_list.length > 0) {
-                    const errorMessage = error_list.map(err => ({
+            let dataToValidate: any;
+            let validationTarget: any;
+
+             if (reqSorce === 'BODY') {
+                dataToValidate = req.body;
+                validationTarget = isArray ? 'body array' : 'body';
+            } else {
+                dataToValidate = req.query;
+                validationTarget = isArray ? 'query array' : 'query';
+            }
+            if(isArray && !Array.isArray(dataToValidate)) {
+                return next(new HttpError(
+                    400, 'Данные не являются массивом'
+                ))
+            }
+            const dtoTransform = isArray ?
+                plainToInstance(dtoClass,dataToValidate as []) :
+                plainToInstance(dtoClass,dataToValidate)
+           
+            let errorList : ValidationError[]
+            if(isArray) {
+                const validationPromise = (dtoTransform as []).map((item: any) => validate(item))
+                const validateResult = await Promise.all(validationPromise)
+                errorList = validateResult.flat()
+            } else {
+                errorList = await validate(dtoTransform);
+            }
+             if (errorList.length > 0) {
+                const errorMessage = errorList.map(err => ({
                     field: err.property,
                     message: Object.values(err.constraints ?? {})[0] || 'Ошибка валидации'
-                }))
-                return next(new HttpError(400,'Ошибка при валидации', errorMessage))
+                }));
+                return next(new HttpError(400, 'Ошибка при валидации', errorMessage));
             }
            if(!filters) {
             req.dto = dtoTransform

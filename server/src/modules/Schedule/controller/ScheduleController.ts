@@ -39,13 +39,18 @@ export class ScheduleController extends BaseController implements IScheduleContr
                 path: '/get',
                 method: 'get',
                 fnc: this.getSchedule,
-                middleware: [ValidateReqMiddleware(ScheduleFiltersDTO, 'QUERY')]
+                middleware: [ValidateReqMiddleware(ScheduleFiltersDTO, 'QUERY',{ filters: true})]
             },
             {
                 path: '/create',
                 method: 'post',
                 fnc: this.createSchedule,
                 middleware: [ValidateReqMiddleware(CreateScheduleDto,'BODY')]
+            },{
+                path: '/createMany',
+                method: 'post',
+                fnc: this.createSchedule,
+                middleware: [ValidateReqMiddleware(CreateScheduleDto,'BODY', {isArray: true})]
             },
              {
                 path: '/update',
@@ -53,6 +58,7 @@ export class ScheduleController extends BaseController implements IScheduleContr
                 fnc: this.updateSchedule,
                 middleware: [ValidateReqMiddleware(UpdateScheduleDto,'BODY')]
             },
+            
 
         ])
     }
@@ -95,9 +101,23 @@ export class ScheduleController extends BaseController implements IScheduleContr
     async createSchedule(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
         try{
             const dto = req.dto as CreateScheduleDto
-            const newSchedule = await this.service.createShedule(dto)
+           
+            const newSchedule = await this.service.createShedule('one',dto)
             this.ok(res,{
                 newSchedule: newSchedule
+            })
+           
+            
+        }catch(e){
+            next(e)
+        }
+    }
+    async createManySchedule(req: CustomRequest, res: Response, next: NextFunction): Promise<void> {
+        try{
+            const dto = req.dto as CreateScheduleDto[]
+            const createdCount = await this.service.createShedule('many',dto)
+            this.ok(res,{
+                createdCount: createdCount
             })
         }catch(e){
             next(e)

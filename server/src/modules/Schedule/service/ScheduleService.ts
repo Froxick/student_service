@@ -14,8 +14,13 @@ export class ScheduleService implements IScheduleService {
     ) {
 
     }
-    async createShedule(data: CreateScheduleDto): Promise<Schedule> {
-        return await this.repository.createOne(data)        
+    async createShedule<T extends CreateScheduleDto | CreateScheduleDto[]>(type: "one" | "many", data: T): Promise<Schedule | number> {
+        if(type === 'one') {
+            return this.repository.createOne(data as CreateScheduleDto)
+        } else {
+            const scheduleCount = await this.repository.createMany(data as CreateScheduleDto[])
+            return scheduleCount.count;
+        }
     }
     async updateShedule(data: UpdateScheduleDto): Promise<Schedule> {
         return await this.updateShedule(data)

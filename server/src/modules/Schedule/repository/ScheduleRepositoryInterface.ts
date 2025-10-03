@@ -4,7 +4,9 @@ import { ScheduleFiltersDTO } from "../dto/ScheduleFilters";
 import { UpdateScheduleDto } from "../dto/ScheduleUpdateDto";
 
 export interface IScheduleRepository {
+
     createOne (data: CreateScheduleDto) : Promise<Schedule>
+    createMany (data: CreateScheduleDto[]) : Promise<{count: number}>
     updateOne (data: UpdateScheduleDto) : Promise<Schedule>
     getMany (filters: ScheduleFiltersDTO) : Promise<Schedule[]>
     getOne (id: number) : Promise<Schedule | null>

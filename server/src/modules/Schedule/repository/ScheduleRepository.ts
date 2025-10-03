@@ -17,6 +17,16 @@ export class ScheduleRepository implements IScheduleRepository {
     ) {
         
     }
+   async createMany(data: CreateScheduleDto[]): Promise<{count: number}> {
+        try{    
+            const schedule = await this.prisma.client.schedule.createMany({
+                data: data
+            })
+            return schedule;
+        }catch(e){
+            throw new HttpError(500,'Ошибка при создании записей')
+        }
+   }
    async createOne(data: CreateScheduleDto): Promise<Schedule> {
        try{
             const newSchedule = await this.prisma.client.schedule.create({

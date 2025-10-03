@@ -10,6 +10,7 @@ import { ScheduleRepository } from "../modules/Schedule/repository/ScheduleRepos
 import { IScheduleService } from "../modules/Schedule/service/ScheduleServiceInterface";
 import { ScheduleService } from "../modules/Schedule/service/ScheduleService";
 
+
 const appBindContainer = new ContainerModule((bind) => {
 
     bind.bind<ILogger>(TYPES.LoggerService).to(LoggerService).inSingletonScope(),

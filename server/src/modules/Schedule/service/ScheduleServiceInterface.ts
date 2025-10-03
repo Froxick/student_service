@@ -6,7 +6,7 @@ import { UpdateScheduleDto } from "../dto/ScheduleUpdateDto"
 export interface IScheduleService {
     getFilters () : Promise<GetFilters>
     getSchedule ( id?: number,filters?: ScheduleFiltersDTO,): Promise<Schedule[] | Schedule | null> 
-    createShedule (data: CreateScheduleDto) : Promise<Schedule>
+    createShedule (type: 'one' | 'many',data: CreateScheduleDto | CreateScheduleDto[]) : Promise<Schedule | number>
     updateShedule (data: UpdateScheduleDto) : Promise<Schedule>
     deleteShedule (id: number) : Promise<void>
 
